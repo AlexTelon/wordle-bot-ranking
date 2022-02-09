@@ -4,7 +4,9 @@ I think it will be a webserver serving a REST enpoint where some of my friends c
 
 Should have a highscore also I guess..
 
-Usees swedish words from https://ordlig.se/static/media/words_5_v2.cb6a80dc2d4c6a7692be.txt
+Using english source of words. Tried swedish first but åäö was a pain to get right for me, and I guess for bots that would talk to this api as well. So lets skip that and keep to english ascii letters and let everyone focus on the fun stuff.
+
+Using https://github.com/AllValley/WordleDictionary/blob/main/wordle_solutions.txt as a source.
 
 
 # How to setup server
