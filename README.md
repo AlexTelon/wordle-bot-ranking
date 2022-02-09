@@ -33,7 +33,7 @@ curl http://localhost:5000/leroy -d "guess=crane" -X PUT
 curl http://localhost:5000/users/leroy
 # Or visit http://localhost:5000/users/leroy in your browser.
 
-# Visit http://localhost:5000/leaderboard for the current leaderboard!
+# Simply visit http://localhost:5000 for the current leaderboard and some documentation!
 ```
 
 # TODO

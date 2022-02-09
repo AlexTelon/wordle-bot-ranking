@@ -85,8 +85,7 @@ class Wordle(Resource):
 api.add_resource(Wordle, '/<string:user_name>')
 api.add_resource(UserManagement, '/users/<string:user_name>')
 
-
-
+@app.route("/")
 @app.route("/leaderboard")
 def leaderboard():
     valid_entries: List[UserData] = [data for data in results.values() if len(data.results) > 1]
@@ -122,6 +121,21 @@ Here are all the bots (or humans) that have tried.
     </tr>
     {entries}
   </table>
+
+<br>
+<br>
+<br>
+<h3>How to add a user?</h3>
+<pre>curl http://localhost:5000/users/leroy -X PUT</pre>
+
+<h3>How to make a guess?</h3>
+<pre>curl http://localhost:5000/leroy -d "guess=crane" -X PUT</pre>
+You will get the green, yellow, grey hints as a response.
+<br>
+
+<h3>To see your results?</h3>
+Visit <code>/users/leroy</code> for details.
+
 </body>
 </html>"""
 
