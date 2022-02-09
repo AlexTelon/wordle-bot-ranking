@@ -32,3 +32,12 @@ curl http://localhost:5000/leroy -d "guess=crane" -X PUT
 # See your results
 curl http://localhost:5000/leroy
 ```
+
+# TODO
+
+ * Persistence
+ * Add highscore
+   * Decide how it should function?
+     * Any bot with over 100 correct words is allowed.
+     * What stats to show? average, mean, best, worst?
+     * What stats to sort on?
