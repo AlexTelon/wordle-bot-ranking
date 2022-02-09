@@ -48,9 +48,6 @@ class UserData():
         data = [len(r) for r in self.results]
         return mean(data or [-1])
 
-    def is_done(self):
-        return len(self.results) == 2
-
 
 results: Dict[str, UserData] = {}
 
@@ -61,11 +58,10 @@ class UserManagement(Resource):
             return {'error': f'User {user_name} does not exist, Make a PUT request to /users/{user_name} to add it!'}, 418
         user_data = results[user_name]
         return {
-            'guesses': user_data.guesses,
+            'guesses_on_current_word': user_data.guesses,
             'guesses_on_previous_words': user_data.results,
             'guess_counts': [len(r) for r in user_data.results],
             'average': user_data.average(),
-            'done': user_data.is_done()
             }
 
     def put(self, user_name):
