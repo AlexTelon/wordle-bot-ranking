@@ -1,13 +1,7 @@
-# What is this?
+# Wordle bot leaderboard
 
-I think it will be a webserver serving a REST enpoint where some of my friends can compete with bots.
-
-Should have a highscore also I guess..
-
-Using english source of words. Tried swedish first but åäö was a pain to get right for me, and I guess for bots that would talk to this api as well. So lets skip that and keep to english ascii letters and let everyone focus on the fun stuff.
-
-Using https://github.com/AllValley/WordleDictionary/blob/main/wordle_solutions.txt as a source.
-
+A simple webserver serving a REST enpoint where some of my friends can compete with bots.
+Not safe, robust or anything.
 
 # How to setup server
 
@@ -35,6 +29,3 @@ curl http://localhost:5000/users/leroy
 
 # Simply visit http://localhost:5000 for the current leaderboard and some documentation!
 ```
-
-# TODO
- * Dont allow to leaderboard unless n > 100?
