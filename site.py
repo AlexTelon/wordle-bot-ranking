@@ -14,8 +14,6 @@ api = Api(app)
 class UserData():
     # Name of the user.
     user_name: str
-    # The same user may attempt different runs. This indicate the run number.
-    running_count: int = 1
 
     # Guesses on the current word
     guesses: List[str] = field(default_factory=list)
@@ -25,13 +23,13 @@ class UserData():
 
     def __post_init__(self):
         # The current word that you need to guess on.
-        self.correct = wordle.next_word(self.user_name, self.running_count, "")
+        self.correct = wordle.next_word(self.user_name, len(self.results), "")
 
     def guess(self, word):
         self.guesses.append(word)
         if word == self.correct:
             self.results.append(tuple(self.guesses))
-            self.correct = wordle.next_word(self.user_name, self.running_count, self.correct)
+            self.correct = wordle.next_word(self.user_name, len(self.results), self.correct)
             self.guesses = []
             return True
         return False
