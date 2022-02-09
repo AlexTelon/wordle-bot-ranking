@@ -30,13 +30,11 @@ curl http://localhost:5000/users/leroy -X PUT
 curl http://localhost:5000/leroy -d "guess=crane" -X PUT
 
 # See your results
-curl http://localhost:5000/leroy
+curl http://localhost:5000/users/leroy
+# Or visit http://localhost:5000/users/leroy in your browser.
+
+# Visit http://localhost:5000/leaderboard for the current leaderboard!
 ```
 
 # TODO
-
- * Add highscore
-   * Decide how it should function?
-     * Any bot with over 100 correct words is allowed.
-     * What stats to show? average, mean, best, worst?
-     * What stats to sort on?
+ * Dont allow to leaderboard unless n > 100?

@@ -9,7 +9,6 @@ import wordle
 
 app = Flask(__name__)
 api = Api(app)
-
 @dataclass
 class UserData():
     # Name of the user.
@@ -53,13 +52,10 @@ class UserData():
         return len(self.results) == 2
 
 
-class UserManagement(Resource):
-    def put(self, user_name):
-        if user_name in results:
-            return {'error': 'User already exists!'}, 409
-        results[user_name] = UserData(user_name)
+results: Dict[str, UserData] = {}
 
-class Wordle(Resource):
+
+class UserManagement(Resource):
     def get(self, user_name: str):
         if user_name not in results:
             return {'error': f'User {user_name} does not exist, Make a PUT request to /users/{user_name} to add it!'}, 418
@@ -72,6 +68,12 @@ class Wordle(Resource):
             'done': user_data.is_done()
             }
 
+    def put(self, user_name):
+        if user_name in results:
+            return {'error': 'User already exists!'}, 409
+        results[user_name] = UserData(user_name)
+
+class Wordle(Resource):
     def put(self, user_name):
         guess = request.form['guess']
         user_data = results[user_name]
@@ -87,11 +89,50 @@ class Wordle(Resource):
 api.add_resource(Wordle, '/<string:user_name>')
 api.add_resource(UserManagement, '/users/<string:user_name>')
 
+
+
+@app.route("/leaderboard")
+def leaderboard():
+    valid_entries: List[UserData] = [data for data in results.values() if len(data.results) > 1]
+
+    valid_entries = sorted(valid_entries, key = lambda d: d.average())
+
+    entries = ""
+    for data in valid_entries:
+        td = lambda s: f"<td>{s}</td>"
+        name = td(data.user_name)
+        n = td(len(data.results))
+        avg = td(data.average())
+        worst = td(max(len(r) for r in data.results))
+        entries += f"""<tr>{name}{n}{avg}{worst}</tr>"""
+
+    return f"""<!DOCTYPE html>
+<html>
+<style>
+table, th, td {{
+  border:1px solid black;
+}}
+</style>
+<body>
+
+Here are all the bots (or humans) that have tried.
+
+  <table>
+    <tr>
+      <th>name</th>
+      <th>n</th>
+      <th>average</th>
+      <th>worst</th>
+    </tr>
+    {entries}
+  </table>
+</body>
+</html>"""
+
 if __name__ == '__main__':
     db = shelve.open('simple.db')
 
     # Populate results from the db.
-    results: Dict[str, UserData] = {}
     results.update(db)
 
     app.run(debug=False)
