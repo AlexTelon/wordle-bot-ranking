@@ -27,5 +27,8 @@ python site.py
 curl http://localhost:5000/users/leroy -X PUT
 
 # Make a first guess for the user leroy.
-curl http://localhost:5000/leroy -d "guess=roman" -X PUT
+curl http://localhost:5000/leroy -d "guess=crane" -X PUT
+
+# See your results
+curl http://localhost:5000/leroy
 ```

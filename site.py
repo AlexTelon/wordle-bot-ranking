@@ -1,6 +1,5 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
-from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import List, Dict, Tuple
 from statistics import mean
@@ -25,7 +24,6 @@ class UserData():
 
     def __post_init__(self):
         self.generator = wordle.gen_words(self.user_name, self.running_count)
-
         # The current word that you need to guess on.
         self.correct = next(self.generator)
 
@@ -35,9 +33,19 @@ class UserData():
             self.results.append(tuple(self.guesses))
             self.correct = next(self.generator)
             self.guesses = []
-
             return True
         return False
+
+    def hint(self, word):
+        result = []
+        for a,b in zip(word, self.correct):
+            if a == b:
+                result.append('green')
+            elif a in self.correct:
+                result.append('yellow')
+            else:
+                result.append('gray')
+        return result
 
     def average(self):
         data = [len(r) for r in self.results]
@@ -57,6 +65,8 @@ class UserManagement(Resource):
 
 class Wordle(Resource):
     def get(self, user_name: str):
+        if user_name not in results:
+            return {'error': f'User {user_name} does not exist, Make a PUT request to /users/{user_name} to add it!'}, 418
         user_data = results[user_name]
         return {
             'guesses': user_data.guesses,
@@ -69,16 +79,19 @@ class Wordle(Resource):
     def put(self, user_name):
         guess = request.form['guess']
         user_data = results[user_name]
+        print(f'got guess {guess} correct is {user_data.correct}')
         was_correct = user_data.guess(guess)
 
-        return {user_name: f'added {guess} it was {was_correct} correct should be {user_data.correct}'}
+        result = {'correct_guess': was_correct}
+        if not was_correct:
+            hint = user_data.hint(guess)
+            result['hint'] = hint
+        return result
 
 api.add_resource(Wordle, '/<string:user_name>')
 api.add_resource(UserManagement, '/users/<string:user_name>')
 
 if __name__ == '__main__':
-
     # Im lazy so while we dont have persistence lets initialize with a user for me for now.
     results['altel1'] = UserData('altel1')
-
     app.run(debug=False)
