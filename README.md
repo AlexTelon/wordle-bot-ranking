@@ -35,7 +35,6 @@ curl http://localhost:5000/leroy
 
 # TODO
 
- * Persistence
  * Add highscore
    * Decide how it should function?
      * Any bot with over 100 correct words is allowed.

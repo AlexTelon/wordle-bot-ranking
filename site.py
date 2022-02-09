@@ -3,6 +3,7 @@ from flask_restful import Resource, Api
 from dataclasses import dataclass, field
 from typing import List, Dict, Tuple
 from statistics import mean
+import shelve
 
 import wordle
 
@@ -23,15 +24,14 @@ class UserData():
     results: List[Tuple[str, ...]] = field(default_factory=list)
 
     def __post_init__(self):
-        self.generator = wordle.gen_words(self.user_name, self.running_count)
         # The current word that you need to guess on.
-        self.correct = next(self.generator)
+        self.correct = wordle.next_word(self.user_name, self.running_count, "")
 
     def guess(self, word):
         self.guesses.append(word)
         if word == self.correct:
             self.results.append(tuple(self.guesses))
-            self.correct = next(self.generator)
+            self.correct = wordle.next_word(self.user_name, self.running_count, self.correct)
             self.guesses = []
             return True
         return False
@@ -54,8 +54,6 @@ class UserData():
     def is_done(self):
         return len(self.results) == 2
 
-
-results: Dict[str, UserData] = {}
 
 class UserManagement(Resource):
     def put(self, user_name):
@@ -92,6 +90,14 @@ api.add_resource(Wordle, '/<string:user_name>')
 api.add_resource(UserManagement, '/users/<string:user_name>')
 
 if __name__ == '__main__':
-    # Im lazy so while we dont have persistence lets initialize with a user for me for now.
-    results['altel1'] = UserData('altel1')
+    db = shelve.open('simple.db')
+
+    # Populate results from the db.
+    results: Dict[str, UserData] = {}
+    results.update(db)
+
     app.run(debug=False)
+
+    # TODO we should update the server more often.
+    db.update(results)
+    db.close()
