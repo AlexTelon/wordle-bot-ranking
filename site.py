@@ -4,11 +4,22 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Tuple
 from statistics import mean
 import shelve
+import signal
+import sys
 
 import wordle
 
 app = Flask(__name__)
 api = Api(app)
+
+results = shelve.open('simple.db', writeback=True)
+
+def signal_handler(sig, frame):
+    """Ensure we save to db on cltr-c for instance"""
+    print('terminated by user!')
+    results.close()
+    sys.exit()
+
 @dataclass
 class UserData():
     # Name of the user.
@@ -49,7 +60,7 @@ class UserData():
         return mean(data or [-1])
 
 
-results: Dict[str, UserData] = {}
+# results: Dict[str, UserData] = {}
 
 
 class UserManagement(Resource):
@@ -73,7 +84,7 @@ class Wordle(Resource):
     def put(self, user_name):
         guess = request.form['guess']
         user_data = results[user_name]
-        print(f'got guess {guess} correct is {user_data.correct}')
+        print(f'got guess {guess} correct was {user_data.correct}')
         was_correct = user_data.guess(guess)
 
         result = {'correct_guess': was_correct}
@@ -88,7 +99,7 @@ api.add_resource(UserManagement, '/users/<string:user_name>')
 @app.route("/")
 @app.route("/leaderboard")
 def leaderboard():
-    valid_entries: List[UserData] = [data for data in results.values() if len(data.results) > 1]
+    valid_entries: List[UserData] = [data for data in results.values() if len(data.results) >= 1]
 
     valid_entries = sorted(valid_entries, key = lambda d: d.average())
 
@@ -140,13 +151,8 @@ Visit <code>/users/leroy</code> for details.
 </html>"""
 
 if __name__ == '__main__':
-    db = shelve.open('simple.db')
-
-    # Populate results from the db.
-    results.update(db)
+    signal.signal(signal.SIGINT, signal_handler)
 
     app.run(debug=False)
 
-    # TODO we should update the server more often.
-    db.update(results)
-    db.close()
+    results.close()
