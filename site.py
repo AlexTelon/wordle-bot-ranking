@@ -85,6 +85,10 @@ class Wordle(Resource):
         guess = request.form['guess']
         user_data = results[user_name]
         print(f'got guess {guess} correct was {user_data.correct}')
+
+        if not wordle.valid_guess(guess):
+            return {'result': f'{guess} is invalid, must guess a proper word!'}, 418
+
         was_correct = user_data.guess(guess)
 
         result = {'correct_guess': was_correct}

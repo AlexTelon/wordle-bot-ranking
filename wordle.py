@@ -3,6 +3,9 @@ import random
 with open('words.txt', 'r') as f:
     WORDS = f.read().splitlines()
 
+def valid_guess(guess):
+    return guess in WORDS
+
 def next_word(user_name, i, prev_word):
     """For now I want a deterministic randomness.
 
