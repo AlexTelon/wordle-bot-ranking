@@ -36,15 +36,15 @@ class UserData():
         self.correct = wordle.next_word(self.user_name, len(self.results), "")
 
     def guess(self, word):
+        hint = self._hint(word)
         self.guesses.append(word)
         if word == self.correct:
             self.results.append(tuple(self.guesses))
             self.correct = wordle.next_word(self.user_name, len(self.results), self.correct)
             self.guesses = []
-            return True
-        return False
+        return hint
 
-    def hint(self, word):
+    def _hint(self, word):
         result = []
         for a,b in zip(word, self.correct):
             if a == b:
@@ -89,13 +89,7 @@ class Wordle(Resource):
         if not wordle.valid_guess(guess):
             return {'result': f'{guess} is invalid, must guess a proper word!'}, 418
 
-        was_correct = user_data.guess(guess)
-
-        result = {'correct_guess': was_correct}
-        if not was_correct:
-            hint = user_data.hint(guess)
-            result['hint'] = hint
-        return result
+        return {'result': user_data.guess(guess)}
 
 api.add_resource(Wordle, '/<string:user_name>')
 api.add_resource(UserManagement, '/users/<string:user_name>')
