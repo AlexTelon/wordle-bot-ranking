@@ -151,6 +151,7 @@ Visit <code>/users/leroy</code> for details.
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
 
-    app.run(debug=False)
+    app.run(port=8404, debug=False, host="0.0.0.0")
+    #app.run(debug=False)
 
     results.close()

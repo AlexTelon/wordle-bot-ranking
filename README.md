@@ -29,3 +29,12 @@ curl http://localhost:5000/users/leroy
 
 # Simply visit http://localhost:5000 for the current leaderboard and some documentation!
 ```
+
+
+# Setup with docker
+
+```bash
+docker build . -t wordle
+# This way you should have the bot always up and running.
+docker run --restart unless-stopped -p 8404:8404 wordle
+```
